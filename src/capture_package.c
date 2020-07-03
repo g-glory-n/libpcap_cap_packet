@@ -37,6 +37,7 @@ pcap_t *p_pcap_t_0 = NULL;
 pcap_dumper_t *p_pcap_dumper_t_0 = NULL;
 
 unsigned int packet_count = 0;
+unsigned long cap_byte_count = 0;
 
 int main(int argc, char *argv[])
 {
@@ -88,7 +89,7 @@ void sigterm_repongse(int sig)
 {
 	if (SIGTERM == sig) {
 		close_if(p_pcap_t_0);
-		fprintf(stdout, "number of packets captured in %d seconds: %u\n", int_cap_time_s, packet_count);
+		fprintf(stdout, "number of packets and bytes captured in %d seconds: %u, %lu\n", int_cap_time_s, packet_count, cap_byte_count);
 		exit(0);
 	}
 }
@@ -100,7 +101,7 @@ void sigalrm_response(int sig)
 		close_if(p_pcap_t_0);
 		// quit(p_if_info_0);
 
-		fprintf(stdout, "number of packets captured in %d seconds: %u\n", int_cap_time_s, packet_count);
+		fprintf(stdout, "number of packets and bytes captured in %d seconds: %u, %lu\n", int_cap_time_s, packet_count, cap_byte_count);
 		exit(0);
 	}
 }
@@ -205,6 +206,7 @@ void cap_packet(if_info *p_if_info_0)
 			fflush(stdout);
 
 			for (int i = 0; i < pkthdr.len; ++i) {
+				cap_byte_count++;
 				printf(" %02x", p_ch_pack_str[i]);
 				if ((i + 1) % 16 == 0) {
 					printf("\n");
@@ -230,6 +232,7 @@ void print_packet(u_char *arg, const struct pcap_pkthdr *pkthdr, const u_char *p
 	fflush(stdout);
 
 	for (int i = 0; i < pkthdr->len; ++i) {
+		cap_byte_count++;
 		printf(" %02x", packet[i]);
 		if ((i + 1) % 16 == 0) {
 			printf("\n");
